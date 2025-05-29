@@ -1,9 +1,13 @@
 # fakspy
-## Oversikt
-Dette prosjektet er bygget med Python 3.13.3 og bruker `numpy`-biblioteket for numeriske beregninger. Det er designet for å kjøre på macOS Sonoma (aarch64) og krever korrekt oppsett av miljøet før bruk.
+Et Python-basert verktøy designet for å bearbeide data som kan importeres 
+eller eksporteres fra **FAKS** (Felles aksjonsstøttesystem). 
+
+## Funksjonalitet
+* **sartopo2faks.py** - konverterer geojson eksportert fra SARTopo til FAKS geojson import filer.
 
 ## Forutsetninger
-Sørg for å ha følgende installert på systemet ditt:
+Dette prosjektet er bygget med Python 3.13.3 eller senere. Sørg for å ha 
+følgende installert på systemet ditt:
 - Python 3.13.3
 - `pip` (Python-pakkebehandler)
 
