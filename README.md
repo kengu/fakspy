@@ -21,9 +21,8 @@ Sørg for at det viser Python 3.13.3.
 ### Steg 1: Klon repoet
 Klon repoet ved å bruke følgende kommando:
 ```bash
-git clone <REPOSITORY_URL>
+git clone git@github.com:kengu/fakspy.git
 ```
-Erstatt `<REPOSITORY_URL>` med den faktiske URL-en for repoet.
 
 ### Steg 2: Opprett et virtuelt miljø (valgfritt, men anbefalt)
 Opprett et virtuelt miljø for å isolere prosjektavhengighetene:
