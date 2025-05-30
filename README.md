@@ -2,8 +2,15 @@
 Et Python-basert verktøy designet for å bearbeide data som kan importeres 
 eller eksporteres fra **FAKS** (Felles aksjonsstøttesystem). 
 
-## Funksjonalitet
-* **sartopo2faks.py** - konverterer geojson eksportert fra SARTopo til FAKS geojson import filer.
+## Funksjoner
+
+### sartopo2faks.py 
+Konverterer geojson eksportert fra SARTopo til FAKS geojson import filer.
+
+### Nettgrensesnitt for transformasjon 
+Enkel prosessering og transformasjon av GeoJSON-filer 
+via et brukervennlig nettgrensesnitt. Last opp GeoJSON-filen din, og 
+systemet vil behandle, klassifisere og generere nedlastbare resultater.
 
 ## Forutsetninger
 Dette prosjektet er bygget med Python 3.13.3 eller senere. Sørg for å ha 
@@ -57,6 +64,8 @@ python3 -c "import numpy; print('Numpy-versjon:', numpy.__version__)"
 Du bør se versjonen av `numpy` skrevet ut i konsollen.
 
 ## Bruk
+
+### Kommandolinje
 Når oppsettet er fullført, kan du kjøre skriptene i prosjektet med:
 ```bash
 python3 <script_name>.py
@@ -67,7 +76,16 @@ Konvertering av SARTopo export til FAKS geojson import filer:
 ```bash
 python3 sartopo2faks.py sartopo.geojson geojson/
 ```
-der `sartopo.geojson` er eksportert fra SARTopo og `geojson/` er folderen som FAKS importfiler skrives til
+der `sartopo.geojson` er eksportert fra SARTopo og `geojson/` er folderen som 
+FAKS importfiler skrives til.
+
+### Transformere GeoJSON-filer via nettgrensesnitt
+Start webserver lokalt med  
+```bash
+python3 main.py
+```
+og åpne siden http://127.0.0.1:5000 i en nettleser
+
 ## Notater
 - Hvis flere avhengigheter legges til, oppdater `requirements.txt`-filen med:
   ```bash

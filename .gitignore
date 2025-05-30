@@ -5,6 +5,8 @@ data
 sink
 .idea
 out
+uploads
+output
 *.iml
 .DS_Store
 
