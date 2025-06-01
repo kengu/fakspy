@@ -10,8 +10,8 @@ from sartopo2faks import enrich_features, classify_features
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = './uploads'
-OUTPUT_FOLDER = './output'
+UPLOAD_FOLDER = 'uploads'
+OUTPUT_FOLDER = 'output'
 
 # Create directories if not exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -52,7 +52,6 @@ def list_features():
         properties_list = [feature.get('properties', {}) for i, feature in enumerate(features) ]
         feature_list = [{'id': i, 'name': f"[{properties.get('class', '')}] "
                                           f"{properties.get('title', 'Unknown')}"}
-
             for i, properties in enumerate(properties_list)
                 if properties.get('class', '') == 'Marker'
                     or properties.get('class', '') == 'Assignment']
@@ -119,6 +118,9 @@ def process_file():
         geojson_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(geojson_path)
 
+        if not os.path.exists(geojson_path):
+            return jsonify({"error": f"{geojson_path} not found"}), 500
+
         # Open the uploaded file and parse it as JSON
         with open(geojson_path, "r") as source_file:
             source_data = json.load(source_file)  # Parse JSON from file
@@ -133,8 +135,7 @@ def process_file():
         upload_name = os.path.splitext(os.path.basename(filename))[0]
 
         # Zip all files in the sink folder
-        unique_name = f"{uuid.uuid4()}_{upload_name}.zip"
-        zip_path = os.path.join(app.config['OUTPUT_FOLDER'], unique_name+".zip")
+        zip_path = os.path.join(app.config['OUTPUT_FOLDER'], upload_name+".zip")
         with zipfile.ZipFile(zip_path, 'w') as zipf:
             for file in processed_files:
                 zipf.write(file, os.path.basename(file))
