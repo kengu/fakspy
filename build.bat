@@ -24,7 +24,3 @@ IF ERRORLEVEL 1 (
 ) ELSE (
     echo All dependencies are already installed.
 )
-
-REM Run the Python script
-echo Running main.py...
-python main.py

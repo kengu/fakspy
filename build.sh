@@ -32,7 +32,3 @@ if [ "$(missing_deps)" == "missing" ]; then
 else
     echo "All dependencies are already installed."
 fi
-
-# Run the Python script
-echo "Running main.py..."
-python3 main.py
