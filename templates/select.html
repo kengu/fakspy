@@ -5,8 +5,26 @@
     <title>Select Features</title>
     <script>
         function toggleSelection(action) {
-            let checkboxes = document.querySelectorAll('input[type=checkbox]');
-            checkboxes.forEach(cb => cb.checked = (action === 'all'));
+            const searchInput = document.getElementById('search-box');
+            const featureItems = document.querySelectorAll('ul li');
+
+            if (action === 'none') {
+                // Deselect all and reset filter
+                searchInput.value = ''; // Clear the search input
+                featureItems.forEach(item => {
+                    item.style.display = ''; // Reset all items to visible
+                    const checkbox = item.querySelector('input[type=checkbox]');
+                    checkbox.checked = false; // Deselect the checkbox
+                });
+            } else if (action === 'all') {
+                // Select all visible checkboxes
+                featureItems.forEach(item => {
+                    if (item.style.display !== 'none') { // Only select visible items
+                        const checkbox = item.querySelector('input[type=checkbox]');
+                        checkbox.checked = true; // Select the checkbox
+                    }
+                });
+            }
         }
 
         function filterFeatures() {

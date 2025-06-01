@@ -1,12 +1,11 @@
 import os
-import uuid
 import json
 import zipfile
 
 from werkzeug.utils import secure_filename
 from flask import Flask, request, jsonify, render_template, send_file
 
-from sartopo2faks import enrich_features, classify_features
+from sartopo2faks import classify_features
 
 app = Flask(__name__)
 
@@ -117,6 +116,13 @@ def process_file():
         filename = secure_filename(file.filename)
         geojson_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(geojson_path)
+
+        print("GeoJSON Path (Relative):", geojson_path)
+        print("GeoJSON Path (Absolute):", os.path.abspath(geojson_path))
+        return jsonify({
+            "GeoJSON Path (Relative):": geojson_path,
+            "GeoJSON Path (Absolute):": os.path.abspath(geojson_path),
+        }), 500
 
         if not os.path.exists(geojson_path):
             return jsonify({"error": f"{geojson_path} not found"}), 500
