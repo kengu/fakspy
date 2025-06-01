@@ -71,11 +71,14 @@ def derive_category(properties):
     # Add more conditions or mappings as needed
     return "Annet"
 
+# --- Gjenkjent ---
 # Oppmøtested
 # Kommandoplass
 # Bosted
-
 # Funn av spor
+# Annet
+
+# --- Ikke gjenkjent ---
 # Interesse av hund
 # Hindring
 # Ikke søkbart
@@ -83,8 +86,6 @@ def derive_category(properties):
 # Observasjon
 # Utkikkspunkt
 # Sperrepost
-# Annet
-
 
 def enrich_features(source_data):
     """

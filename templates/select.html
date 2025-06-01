@@ -1,0 +1,47 @@
+<!-- select.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Features</title>
+    <script>
+        function toggleSelection(action) {
+            let checkboxes = document.querySelectorAll('input[type=checkbox]');
+            checkboxes.forEach(cb => cb.checked = (action === 'all'));
+        }
+
+        function filterFeatures() {
+            const searchInput = document.getElementById('search-box').value.toLowerCase();
+            const featureItems = document.querySelectorAll('ul li');
+            featureItems.forEach(item => {
+                const featureName = item.textContent.toLowerCase();
+                const checkbox = item.querySelector('input[type=checkbox]');
+                if (featureName.includes(searchInput)) {
+                    item.style.display = ''; // Make the item visible
+                    checkbox.checked = true; // Automatically select the checkbox
+                } else {
+                    item.style.display = 'none'; // Hide the item
+                    checkbox.checked = false; // Automatically deselect the checkbox
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<h1>Select Features to Export</h1>
+<form action="/export" method="POST">
+    <input type="hidden" name="geojson_path" value="{{ file_path }}">
+    <button type="button" onclick="toggleSelection('all')">Select All</button>
+    <button type="button" onclick="toggleSelection('none')">Deselect All</button>
+    <button type="submit">Export</button>
+    <br><br>
+    <input type="text" id="search-box" oninput="filterFeatures()" placeholder="Search features...">
+    <ul>
+        {% for feature in features %}
+        <li>
+            <input type="checkbox" name="features" value="{{ feature.id }}"> {{ feature.name }}
+        </li>
+        {% endfor %}
+    </ul>
+</form>
+</body>
+</html>
