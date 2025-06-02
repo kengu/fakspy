@@ -1,71 +1,94 @@
 <!-- select.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Select Features</title>
-    <script>
-        function toggleSelection(action) {
-            const searchInput = document.getElementById('search-box');
-            const featureItems = document.querySelectorAll('ul li');
+{% extends "base.html" %}
 
-            if (action === 'none') {
-                // Deselect all and reset filter
-                searchInput.value = ''; // Clear the search input
-                featureItems.forEach(item => {
-                    item.style.display = ''; // Reset all items to visible
-                    const checkbox = item.querySelector('input[type=checkbox]');
-                    checkbox.checked = false; // Deselect the checkbox
-                });
-            } else if (action === 'all') {
-                // Select all visible checkboxes
-                featureItems.forEach(item => {
-                    if (item.style.display !== 'none') { // Only select visible items
-                        const checkbox = item.querySelector('input[type=checkbox]');
-                        checkbox.checked = true; // Select the checkbox
-                    }
-                });
-            }
-        }
+{% block content %}
+<script>
+    function toggleSelection(action) {
+        const searchInput = document.getElementById('search-box');
+        const featureItems = document.querySelectorAll('ul li');
 
-        function filterFeatures() {
-            const searchInput = document.getElementById('search-box').value.toLowerCase();
-            // Split by spaces, remove empty terms
-            const searchTerms = searchInput.split(' ').filter(term => term);
-            const featureItems = document.querySelectorAll('ul li');
+        if (action === 'none') {
+            // Deselect all and reset filter
+            searchInput.value = ''; // Clear the search input
             featureItems.forEach(item => {
-                const featureName = item.textContent.toLowerCase();
-
-                // Check if *all* search terms match the feature name
-                const allTermsMatch = searchTerms.every(term => featureName.includes(term));
-
+                item.style.display = ''; // Reset all items to visible
                 const checkbox = item.querySelector('input[type=checkbox]');
-                if (allTermsMatch) {
-                    item.style.display = ''; // Make the item visible
-                    checkbox.checked = true; // Automatically select the checkbox
-                } else {
-                    item.style.display = 'none'; // Hide the item
-                    checkbox.checked = false; // Automatically deselect the checkbox
+                checkbox.checked = false; // Deselect the checkbox
+            });
+        } else if (action === 'all') {
+            // Select all visible checkboxes
+            featureItems.forEach(item => {
+                if (item.style.display !== 'none') { // Only select visible items
+                    const checkbox = item.querySelector('input[type=checkbox]');
+                    checkbox.checked = true; // Select the checkbox
                 }
             });
         }
-    </script>
-</head>
-<body>
-<h1>Select Features to Export</h1>
-<form action="/export" method="POST">
-    <input type="hidden" name="geojson_path" value="{{ file_path }}">
-    <button type="button" onclick="toggleSelection('all')">Select All</button>
-    <button type="button" onclick="toggleSelection('none')">Deselect All</button>
-    <button type="submit">Export</button>
-    <br><br>
-    <input type="text" id="search-box" oninput="filterFeatures()" placeholder="Search features...">
-    <ul>
-        {% for feature in features %}
-        <li>
-            <input type="checkbox" name="features" value="{{ feature.id }}"> {{ feature.name }}
-        </li>
-        {% endfor %}
-    </ul>
-</form>
-</body>
-</html>
+    }
+
+    function filterFeatures() {
+        const searchInput = document.getElementById('search-box').value.toLowerCase();
+        // Split by spaces, remove empty terms
+        const searchTerms = searchInput.split(' ').filter(term => term);
+        const featureItems = document.querySelectorAll('ul li');
+        featureItems.forEach(item => {
+            const featureName = item.textContent.toLowerCase();
+
+            // Check if *all* search terms match the feature name
+            const allTermsMatch = searchTerms.every(term => featureName.includes(term));
+
+            const checkbox = item.querySelector('input[type=checkbox]');
+            if (allTermsMatch) {
+                item.classList.remove('d-none'); // Make the item visible
+                checkbox.checked = true; // Automatically select the checkbox
+            } else {
+                item.classList.add('d-none'); // Hide the item
+                checkbox.checked = false; // Automatically deselect the checkbox
+            }
+        });
+    }
+</script>
+
+<div class="container my-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2>Select Features to Export</h2>
+        </div>
+        <div class="card-body">
+            <!-- Form -->
+            <form action="/export" method="POST">
+                <input type="hidden" name="upload_path" value="{{ upload_path }}">
+                <div class="d-flex justify-content-between align-items-center mt-3 my-2">
+                    <div>
+                        <button type="reset" onclick="toggleSelection('all')" class="btn btn-secondary">Select All</button>
+                        <button type="button" onclick="toggleSelection('none')" class="btn btn-secondary">Deselect All</button>
+                        <button type="submit" class="btn btn-primary">Export</button>
+                    </div>
+                    <div>
+                        <button type="button" onclick="window.history.back()" class="btn btn-info justify-content-between">Cancel</button>
+                    </div>
+                </div>
+                <input type="text" id="search-box" oninput="filterFeatures()" placeholder="Search features..." class="form-control my-3">
+                <ul class="list-group">
+                    {% for feature in features %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="form-check">
+                            <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="features"
+                                    value="{{ feature.id }}"
+                                    id="feature-checkbox-{{ feature.id }}">
+                            <label class="form-check-label" for="feature-checkbox-{{ feature.id }}">
+                                {{ feature.name }}
+                            </label>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
