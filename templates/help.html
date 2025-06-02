@@ -9,24 +9,24 @@
             <h2>Hjelp</h2>
         </div>
         <div class="card-body">
-            <h3 class="my-1">Konvertere utvalg</h3>
+            <h3 class="my-1">Kun konvertere valgte kartobjekter</h3>
             <hr>
             <p>Med denne funksjonen kan du velge hvilke kartobjekter fra SARTopo du ønsker å konvertere. Bruk søkefelter til å filtere på mappe, type kartobjekt eller navn </p>
             <p><strong>Slik bruker du funksjonen:</strong></p>
             <ul>
-                <li>Velg SARTopo GeoJSON fil som skal konverteres og klikk på <button class="btn btn-primary btn-sm">Velg</button></li>
+                <li>Velg SARTopo GeoJSON fil som skal konverteres og klikk på "<button class="btn btn-primary btn-sm">Velg</button>"</li>
                 <li>Velg kartobjekter du ønsker å inkludere med sjekkbokser eller filtrer med søkeboksen</li>
-                <li>Når du har valgt kartobjekter så eksporterer du med <button class="btn btn-primary btn-sm">Eksport</button></li>
+                <li>Når du har valgt kartobjekter så eksporterer du med "<button" class="btn btn-primary btn-sm">Eksport</button>"</li>
                 <li>Lagre filen som lastes ned lokalt</li>
             </ul>
             <br/>
 
-            <h3 class="my-1">Konverter direkte</h3>
+            <h3 class="my-1">Konverter alle kartobjekter direkte</h3>
             <hr>
-            <p>Denne funksjonen lar deg konvertere alle støttede kartobjekter direkte.</p>
+            <p>Denne funksjonen lar deg konvertere alle <a href="#supported">støttede kartobjekter</a> direkte.</p>
             <p><strong>Slik bruker du funksjonen:</strong></p>
             <ul>
-                <li>Velg SARTopo GeoJSON fil som skal konverteres og klikk på <button class="btn btn-primary btn-sm">Eksport</button></li>
+                <li>Velg SARTopo GeoJSON fil som skal konverteres og klikk på "<button class="btn btn-primary btn-sm">Eksport</button>"</li>
                 <li>Lagre filen som lastes ned lokalt</li>
             </ul>
             <br/>
@@ -37,12 +37,12 @@
             <ul>
                 <li>Åpne et SARTopo kart</li>
                 <li>Klikk <img width="24px" height="24px" src="https://sartopo.com/static/images/export.svg" alt="icon"/> øverst i menyen "Map Objects"</li>
-                <li>Velg format "GeoJSON (full backup) og klikk på <button class="btn btn-warning btn-sm">Eksport</button></li>
+                <li>Velg format "GeoJSON (full backup)" og klikk på "<button class="btn btn-warning btn-sm">Eksport</button>"</li>
                 <li>Lagre filen som lastes ned lokalt</li>
             </ul>
             <br/>
 
-            <h3 class="my-1">Hvilke kartobjekter i SARTopo støttes av FAKS?</h3>
+            <h3 id="supported" class="my-1">Hvilke kartobjekter i SARTopo støttes av FAKS?</h3>
             <hr>
             <p>FAKS støtter punkter, linjer og arealer fra SARTopo. </p>
             <p><strong>Følgende regler benyttes ved konvertering av punkter:</strong></p>
@@ -50,7 +50,7 @@
                 <li>SARTopo Marker med "oppmøte" i navn konverteres til punkt med kategori "Oppmøte" i FAKS</li>
                 <li>SARTopo Marker med "ko" i navn konverteres til punkt med kategori "Kommandoplass" i FAKS</li>
                 <li>SARTopo Marker Symbol "cp" konverteres til punkt med kategori "Kommandoplass" i FAKS</li>
-                <li>SARTopo Marker med navn "bosted", "bopæl" eller "bopæl" navn konverteres til punkt med kategori "Bosted" i FAKS</li>
+                <li>SARTopo Marker med navn "bosted", "bopel" eller "bopæl" navn konverteres til punkt med kategori "Bosted" i FAKS</li>
                 <li>SARTopo Marker "funn" i navn konverteres til punkt med kategori "Funn av sport" i FAKS</li>
                 <li>Alle andre SARTopo Markers får kategori "Annet" i FAKS</li>
             </ul>
