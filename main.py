@@ -40,6 +40,10 @@ def help():
 def privacy():
     return render_template('privacy.html')
 
+@app.route('/tos')
+def tos():
+    return render_template('tos.html')
+
 @app.route('/process', methods=['POST'])
 def process():
     # Secure the filename and save it to UPLOAD_FOLDER
