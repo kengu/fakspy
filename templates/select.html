@@ -29,11 +29,17 @@
 
         function filterFeatures() {
             const searchInput = document.getElementById('search-box').value.toLowerCase();
+            // Split by spaces, remove empty terms
+            const searchTerms = searchInput.split(' ').filter(term => term);
             const featureItems = document.querySelectorAll('ul li');
             featureItems.forEach(item => {
                 const featureName = item.textContent.toLowerCase();
+
+                // Check if *all* search terms match the feature name
+                const allTermsMatch = searchTerms.every(term => featureName.includes(term));
+
                 const checkbox = item.querySelector('input[type=checkbox]');
-                if (featureName.includes(searchInput)) {
+                if (allTermsMatch) {
                     item.style.display = ''; // Make the item visible
                     checkbox.checked = true; // Automatically select the checkbox
                 } else {
