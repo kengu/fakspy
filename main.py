@@ -95,7 +95,8 @@ def list_features(upload_path):
 
         return render_template('select.html',
             features=feature_list,
-            upload_path=upload_path
+            upload_path=upload_path,
+            upload_file=os.path.basename(upload_path)
         )
 
     except Exception as e:
