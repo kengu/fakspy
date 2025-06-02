@@ -29,6 +29,14 @@ def home():
     # Render the upload form
     return render_template('index.html')
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/help')
+def help_page():
+    return render_template('help.html')
+
 @app.route('/process', methods=['POST'])
 def process():
     # Secure the filename and save it to UPLOAD_FOLDER
@@ -39,7 +47,7 @@ def process():
     if action == 'select':
         return list_features(upload_path)
     elif action == 'convert':
-        return convert(upload_path)
+        return convert(upload_path, [])
     else:
         flash('Invalid action specified!', 'error')
         return redirect(request.url)
@@ -62,14 +70,14 @@ def list_features(upload_path):
                 if folder_id:
                     folder_mapping[folder_id] = properties.get('title', 'None')
 
-        # Extract feature properties (like 'id' or 'name') for rendering
-        properties_list = [feature.get('properties', {}) for feature in features]
         feature_list = []
-        for i, properties in enumerate(properties_list):
-            if properties.get('class', '') in ['Marker', 'Assignment']:
+        # Extract feature properties (like 'id' or 'name') for rendering
+        for i, feature in enumerate(features):
+            geometry = feature.get('geometry', {})
+            properties = feature.get('properties', {})
+            if geometry:
                 folder_id = properties.get('folderId')
                 folder_name = folder_mapping.get(folder_id, 'None')
-
                 feature_list.append({
                     'id': i,
                     'name': f"[{folder_name}]"
@@ -114,49 +122,21 @@ def upload():
 
     return upload_path
 
-def convert(upload_path):
+def convert(upload_path, selected_ids):
     try:
-        # Open the uploaded file and parse it as JSON
-        with open(upload_path, "r") as source_file:
-            source_data = json.load(source_file)  # Parse JSON from file
-
-        # Classify the enriched features
-        sink_path = os.path.join(app.config['OUTPUT_FOLDER'], "sink_files")
-        classify_features(source_data, sink_path)
-
-        processed_files = [os.path.join(sink_path, file) for file in os.listdir(sink_path)
-            if os.path.isfile(os.path.join(sink_path, file))]
-
-        upload_name = os.path.splitext(os.path.basename(upload_path))[0]
-
-        # Zip all files in the sink folder
-        zip_path = os.path.join(app.config['OUTPUT_FOLDER'], upload_name+".zip")
-        with zipfile.ZipFile(zip_path, 'w') as zipf:
-            for file in processed_files:
-                zipf.write(file, os.path.basename(file))
-
-        # Return the zip file to the client for download
-        return send_file(zip_path, as_attachment=True)
-
-    except Exception as e:
-        flash(f"Error while converting file: {str(e)}", 'error')
-        return redirect(request.url)
-
-@app.route('/export', methods=['POST'])
-def export():
-    try:
-        selected_ids = request.form.getlist('features')  # Extract selected feature IDs
-        upload_path = request.form.get('upload_path')
-
-        print(f"export: upload_path = {upload_path}, type = {type(upload_path)}")
-
         # Load original GeoJSON data
         with open(upload_path, 'r') as file:
             geojson_data = json.load(file)
 
         # Filter features based on user selection
-        filtered_features = [geojson_data['features'][int(i)] for i in selected_ids]
+        if selected_ids:
+            filtered_features = [geojson_data['features'][int(i)] for i in selected_ids]
+        else:
+            filtered_features = geojson_data['features']
+
         source_data = { "features": filtered_features }
+
+        print(source_data)
 
         # Generate a unique folder name using a UUID
         unique_folder = f"job_{uuid.uuid4()}"
@@ -182,8 +162,15 @@ def export():
         return send_file(zip_path, as_attachment=True)
 
     except Exception as e:
-        flash(f"Error while exporting file: {str(e)}", 'error')
+        flash(f"Error while converting file: {str(e)}", 'error')
         return redirect(request.url)
+
+@app.route('/export', methods=['POST'])
+def export():
+    upload_path = request.form.get('upload_path')
+    selected_ids = request.form.getlist('features')  # Extract selected feature IDs
+
+    return convert(upload_path, selected_ids)
 
 if __name__ == "__main__":
     # Quick test configuration. Please use proper Flask configuration options

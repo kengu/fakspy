@@ -42,7 +42,7 @@ def calculate_bounding_box(coordinates):
         "maxLng": max(lngs)
     }
 
-def derive_category(properties):
+def derive_point_category(properties):
     """
     Derives the 'category' field based on the given 'marker-symbol'.
 
@@ -103,34 +103,62 @@ def enrich_features(source_data):
         if not geometry:
             continue
 
-        if geometry.get("type", "") == "Point":
-            # Map known fields to the new structure
-            transformed_properties = {
-                "aid": feature.get("id", ""),  # Map the unique id to aid
-                "title": properties.get("title", ""),  # Use 'title' from source
-                "name": properties.get("title") or feature.get("id", ""),  # Fallback to 'id' if title is missing
-                "level": "Punkt",  # Assign static value
-                "category": derive_category(properties),
-                "class": properties.get("class"),
-                "imageIds": [],  # Default empty list since no images exist in source
-                "message": properties.get("description", "")  # Use 'description' for message, fallback to empty string
-            }
+        feature_type = geometry.get("type", "")
+        feature_class = properties.get("class", "")
 
         # Detect geometry type and add derived information
-        if geometry.get("type", "") == "Polygon":
-            # Calculate bounding box for Polygon geometry
-            bounding_box = calculate_bounding_box(geometry["coordinates"])
-            transformed_properties = {
-                "id": feature.get("id", ""),  # Map the unique id to aid
-                "arealId": feature.get("id", ""),  # Map the unique id to aid
-                "title": properties.get("title", ""),  # Use 'title' from source
-                "name": properties.get("title") or feature.get("id", ""),  # Fallback to 'id' if title is missing
-                "class": properties.get("class"),
-                "boundingBox": bounding_box,   # Add bounding box to properties
-            }
+        if feature_class == "Assignment":
+            if feature_type == "Polygon":
+                transformed_properties = {
+                    "aid": feature.get("id", ""),  # Map the unique id to aid
+                    "title": properties.get("title", ""),  # Use 'title' from source
+                    "class": feature_class,
+                    "category": "area",
+                    # TODO: classify mission status
+                    "missionStatus": "empty"
+                }
 
-        # Add placeholder or real related features
-        transformed_properties["relatedFeatures"] = []  # Relationships can be added here later, if applicable
+            if feature_type == "LineString":
+                transformed_properties = {
+                    "aid": feature.get("id", ""),  # Map the unique id to aid
+                    "title": properties.get("title", ""),  # Use 'title' from source
+                    "class": feature_class,
+                    "category": "path",
+                    # TODO: classify mission status
+                    "missionStatus": "empty"
+                }
+
+        else:
+
+            # Not an Assignment
+            if feature_type == "Point":
+                print(properties)
+                # Map known fields to the new structure
+                transformed_properties = {
+                    "aid": feature.get("id", ""),  # Map the unique id to aid
+                    "title": properties.get("title", ""),  # Use 'title' from source
+                    "class": feature_class,
+                    "level": "Punkt",  # Assign static value
+                    "category": derive_point_category(properties),
+                }
+
+            if feature_type == "Polygon":
+                transformed_properties = {
+                    "aid": feature.get("id", ""),  # Map the unique id to aid
+                    "title": properties.get("title", ""),  # Use 'title' from source
+                    "class": feature_class,
+                    "category": "area",
+                    "missionStatus": "empty"
+                }
+
+            if feature_type == "LineString":
+                transformed_properties = {
+                    "aid": feature.get("id", ""),  # Map the unique id to aid
+                    "title": properties.get("title", ""),  # Use 'title' from source
+                    "class": feature_class,
+                    "category": "path",
+                    "missionStatus": "empty"
+                }
 
         # Enrich the feature with new properties
         enriched_features.append(
@@ -153,6 +181,7 @@ def classify_features(source_data, output_folder):
     enriched_data = enrich_features(source_data)
 
     for feature in enriched_data["features"]:
+        feature_type = feature["geometry"].get("type", "")
         feature_class = feature["properties"].get("class", "")
         feature_title = feature["properties"].get("title", "")
         feature_geometry = feature.get("geometry", None)
@@ -162,16 +191,15 @@ def classify_features(source_data, output_folder):
             # Folders themselves aren't geometric; categorize based on folder-to-sink mapping
             if feature_title in folder_to_sink:
                 sink_files[folder_to_sink[feature_title]]["features"].append(feature)
-        elif feature_class == "Marker":
-            # All point features go to Punkter.geojson
-            sink_files["Punkter.geojson"]["features"].append(feature)
-        elif feature_class == "Assignment" and feature_geometry:
-            # Classify shapes further by their geometry type
-            if feature_geometry["type"] == "LineString":  # Line features
+        elif feature_geometry:
+            if feature_type == "Point":
+                # All Point features go to Punkter.geojson
+                sink_files["Punkter.geojson"]["features"].append(feature)
+            elif feature_type == "LineString":  # Line features
+                # All LineString features go to Punkter.geojson
                 sink_files["Linjer.geojson"]["features"].append(feature)
-            elif feature_geometry["type"] == "Polygon":  # Polygon features
+            elif feature_type == "Polygon":  # Polygon features
                 sink_files["Soeksarealer.geojson"]["features"].append(feature)
-        # Add custom classifications if needed for other classes or scenarios
 
     # Ensure the output folder exists (create it if necessary)
     os.makedirs(output_folder, exist_ok=True)
