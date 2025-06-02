@@ -132,7 +132,6 @@ def enrich_features(source_data):
 
             # Not an Assignment
             if feature_type == "Point":
-                print(properties)
                 # Map known fields to the new structure
                 transformed_properties = {
                     "aid": feature.get("id", ""),  # Map the unique id to aid

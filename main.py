@@ -5,7 +5,7 @@ import zipfile
 
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from flask import Flask, request, redirect, url_for, flash, jsonify, render_template, send_file
+from flask import Flask, request, redirect, flash, jsonify, render_template, send_file
 from flask_session import Session
 
 from sartopo2faks import classify_features
@@ -22,7 +22,6 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
-
 
 @app.route('/')
 def home():
