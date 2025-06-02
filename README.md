@@ -91,7 +91,7 @@ og åpne siden http://127.0.0.1:5000 i en nettleser
   ```bash
   pip freeze > requirements.txt
   ```
-- Aktiver alltid det virtuelle miljøet før du jobber med prosjektet.
+- [Aktiver alltid det virtuelle miljøet](https://python.land/virtual-environments/virtualenv#Python_venv_activation) etter utsjekk av kode før du jobber med prosjektet.
 
 ## Feilsøking
 Hvis du møter problemer under installasjon eller kjøring, sjekk:
