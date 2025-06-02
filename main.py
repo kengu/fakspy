@@ -33,8 +33,12 @@ def about():
     return render_template('about.html')
 
 @app.route('/help')
-def help_page():
+def help():
     return render_template('help.html')
+
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
 
 @app.route('/process', methods=['POST'])
 def process():
