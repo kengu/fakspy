@@ -47,13 +47,31 @@ def list_features():
             geojson_data = json.load(file)
             features = geojson_data.get('features', [])
 
+        # Create a dictionary to map folderId to folder names (for 'Folder' features)
+        folder_mapping = {}
+        for feature in features:
+            folder_id = feature.get('id')
+            properties = feature.get('properties', {})
+            if properties.get('class', '') == 'Folder':
+                if folder_id:
+                    folder_mapping[folder_id] = properties.get('title', 'None')
+
         # Extract feature properties (like 'id' or 'name') for rendering
-        properties_list = [feature.get('properties', {}) for i, feature in enumerate(features) ]
-        feature_list = [{'id': i, 'name': f"[{properties.get('class', '')}] "
-                                          f"{properties.get('title', 'Unknown')}"}
-            for i, properties in enumerate(properties_list)
-                if properties.get('class', '') == 'Marker'
-                    or properties.get('class', '') == 'Assignment']
+        properties_list = [feature.get('properties', {}) for feature in features]
+        feature_list = []
+        for i, properties in enumerate(properties_list):
+            if properties.get('class', '') in ['Marker', 'Assignment']:
+                folder_id = properties.get('folderId')
+                folder_name = folder_mapping.get(folder_id, 'None')
+
+                feature_list.append({
+                    'id': i,
+                    'name': f"[{folder_name}]"
+                            f"[{properties.get('class', '')}] "
+                            f"{properties.get('title', 'Unknown')}",
+                    'folder': folder_name
+                })
+
 
         return render_template('select.html',
             features=feature_list,
