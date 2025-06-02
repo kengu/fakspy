@@ -52,7 +52,7 @@
 <div class="container my-5">
     <div class="card">
         <div class="card-header bg-primary text-white">
-            <h2>Select Features to Export</h2>
+            <h2>Velg hva som skal konverteres</h2>
         </div>
         <div class="card-body">
             <!-- Form -->
@@ -60,15 +60,15 @@
                 <input type="hidden" name="upload_path" value="{{ upload_path }}">
                 <div class="d-flex justify-content-between align-items-center mt-3 my-2">
                     <div>
-                        <button type="reset" onclick="toggleSelection('all')" class="btn btn-secondary">Select All</button>
-                        <button type="button" onclick="toggleSelection('none')" class="btn btn-secondary">Deselect All</button>
-                        <button type="submit" class="btn btn-primary">Export</button>
+                        <button type="reset" onclick="toggleSelection('all')" class="btn btn-secondary">Alle</button>
+                        <button type="button" onclick="toggleSelection('none')" class="btn btn-secondary">Ingen</button>
+                        <button type="submit" class="btn btn-primary">Eksport</button>
                     </div>
                     <div>
                         <button type="button" onclick="window.history.back()" class="btn btn-info justify-content-between">Cancel</button>
                     </div>
                 </div>
-                <input type="text" id="search-box" oninput="filterFeatures()" placeholder="Search features..." class="form-control my-3">
+                <input type="text" id="search-box" oninput="filterFeatures()" placeholder="Filtrer på..." class="form-control my-3">
                 <ul class="list-group">
                     {% for feature in features %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">

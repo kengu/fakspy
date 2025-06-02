@@ -5,14 +5,14 @@
 <div class="container my-5">
     <div class="card">
         <div class="card-header bg-primary text-white">
-            <h2>SARTopo to FAKS Converter</h2>
+            <h2>SARTopo til FAKS konverterer</h2>
         </div>
         <div class="card-body">
             <!-- Form -->
             <form action="/process" method="post" enctype="multipart/form-data">
                 <!-- File Input -->
                 <div class="mb-3">
-                    <label for="geojson_file" class="form-label">Upload SARTopo GeoJSON file:</label>
+                    <label for="geojson_file" class="form-label">Last opp SARTopo GeoJSON fil:</label>
                     <input type="file" name="geojson_file" id="geojson_file" class="form-control" required>
                 </div>
                 <!-- Submit Buttons -->
@@ -26,18 +26,4 @@
         </div>
     </div>
 </div>
-<!--
-<h2>Process selected features</h2>
-<form action="/select" method="post" enctype="multipart/form-data">
-    <label for="select">SARTopo GeoJSON file:</label>
-    <input type="file" name="geojson_file" id="select" required>
-    <button type="submit">Select</button>
-</form>
-<h2>Process all features</h2>
-<form action="/process" method="post" enctype="multipart/form-data">
-    <label for="process">SARTopo GeoJSON file:</label>
-    <input type="file" name="geojson_file" id="process" required>
-    <button type="submit">Convert</button>
-</form>
--->
 {% endblock %}
