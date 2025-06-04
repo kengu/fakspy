@@ -1,0 +1,42 @@
+<!-- select.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2>Konvertering av {{upload_file}} utført</h2>
+        </div>
+        <div class="card-body">
+            <form action="{{ delete_url }}" method="POST">
+                <div class="d-flex justify-content-between align-items-center my-2 mx-2">
+                    {% if download_automatic %}
+                    <div>Nedlasting starter automatisk. Hvis nedlastingen ikke starter, klikk her:
+                        <a id="download-link" href="{{ download_url }}">{{ download_file }}</a>
+                    </div>
+                    {% else %}
+                    <div>Klikk her for å laste ned filen:
+                        <a href="{{ download_url }}">{{ download_file }}</a>
+                    </div>
+                    {% endif %}
+                    <div>
+                        Alle data slettes automatisk om {{delete_after}}.
+                        <button type="submit" class="btn btn-secondary">Slett nå</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if download_automatic %}
+<script>
+    // Trigger download automatically on page load
+    window.onload = function () {
+        const downloadLink = document.getElementById("download-link");
+        downloadLink.click();
+    };
+</script>
+{% endif %}
+
+{% endblock %}
