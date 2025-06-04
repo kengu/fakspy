@@ -68,7 +68,7 @@ def delete_job(app, job_id):
 
 def schedule_job(app, job_id,delete_time):
     scheduled_jobs = load_scheduled_jobs()
-    scheduled_jobs[job_id] = delete_time
+    scheduled_jobs[job_id] = delete_time.isoformat()
     save_scheduled_jobs(scheduled_jobs)
     scheduler.add_job(
         func=delete_job,
