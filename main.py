@@ -220,7 +220,7 @@ def job(job_id):
         app.config['OUTPUT_FOLDER'], f"job_{job_id}"
     )
     if not os.path.exists(job_path):
-        return redirect(url_for('home_page1'))
+        return redirect(url_for('home_page'))
 
     upload_file = get_upload_file(job_id)
     upload_name = get_file_name_without_ext(upload_file)
