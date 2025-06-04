@@ -181,8 +181,7 @@ def convert(job_id, upload_path, selected_ids):
         # Return redirect URL for client to initiate automatic download
         job_url = url_for(
             'job',
-            job_id=job_id,
-            _external=True
+            job_id=job_id
         )
 
         return redirect(f"{job_url}?dl=1")
@@ -233,13 +232,11 @@ def job(job_id):
     delete_url = url_for(
         'delete',
         job_id=job_id,
-        _external=True
     )
 
     download_url = url_for(
         'download',
         job_id=job_id,
-        _external=True
     )
 
     download_file = f"{upload_name}.zip"
