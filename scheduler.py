@@ -12,7 +12,8 @@ scheduler = BackgroundScheduler()
 scheduler.start()
 
 # File path to store the data
-PERSISTENT_FILE = "scheduled_jobs.json"
+GENERATED_JOBS_FILE = "generated_jobs.json"
+SCHEDULED_JOBS_FILE = "scheduled_jobs.json"
 
 DEFAULT_EXPIRATION_TIME = timedelta(minutes=10)
 
@@ -39,12 +40,20 @@ def safe_write(file_path, data):
         finally:
             fcntl.flock(f, fcntl.LOCK_UN)
 
-# Load and save jobs
+def load_generated_jobs():
+    return safe_read(GENERATED_JOBS_FILE)
+
+def save_generated_jobs(jobs):
+    safe_write(GENERATED_JOBS_FILE, jobs)
+
+def delete_generated_jobs():
+    safe_write(GENERATED_JOBS_FILE, {})
+
 def load_scheduled_jobs():
-    return safe_read(PERSISTENT_FILE)
+    return safe_read(SCHEDULED_JOBS_FILE)
 
 def save_scheduled_jobs(jobs):
-    safe_write(PERSISTENT_FILE, jobs)
+    safe_write(SCHEDULED_JOBS_FILE, jobs)
 
 def delete_job(app, job_id):
     # Locate job folders
@@ -66,7 +75,15 @@ def delete_job(app, job_id):
     scheduled_jobs.pop(job_id)
     save_scheduled_jobs(scheduled_jobs)
 
-def schedule_job(app, job_id,delete_time):
+def schedule_job(app, upload_file, job_id, create_time, delete_time):
+    generated_jobs = load_generated_jobs()
+    generated_jobs[job_id] = {
+        'upload_file': upload_file,
+        'create_time': delete_time.isoformat(),
+        'delete_time': delete_time.isoformat(),
+    }
+    save_generated_jobs(generated_jobs)
+
     scheduled_jobs = load_scheduled_jobs()
     scheduled_jobs[job_id] = delete_time.isoformat()
     save_scheduled_jobs(scheduled_jobs)

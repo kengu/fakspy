@@ -10,7 +10,8 @@ from flask_session import Session
 from werkzeug.utils import secure_filename
 
 from sartopo2faks import classify_features
-from scheduler import DEFAULT_EXPIRATION_TIME, delete_job, load_scheduled_jobs, schedule_job, init_scheduler
+from scheduler import DEFAULT_EXPIRATION_TIME, delete_job, load_scheduled_jobs, schedule_job, init_scheduler, \
+    load_generated_jobs, delete_generated_jobs
 
 app = Flask(__name__)
 sess = Session()
@@ -137,8 +138,9 @@ def upload(job_id):
     file.save(upload_path)
 
     # Schedule the file for deletion
-    delete_time = datetime.now() + DEFAULT_EXPIRATION_TIME
-    schedule_job(app, job_id, delete_time)
+    create_time = datetime.now()
+    delete_time = create_time + DEFAULT_EXPIRATION_TIME
+    schedule_job(app, filename, job_id, create_time, delete_time)
 
     return upload_path
 
@@ -280,6 +282,14 @@ def delete(job_id):
     delete_job(app, job_id)
 
     return redirect(url_for('home_page'))
+
+@app.route('/job/generated')
+def job_generated():
+    return jsonify(load_generated_jobs())
+
+@app.route('/job/generated/delete', methods=['POST'])
+def job_generated_delete():
+    return jsonify(delete_generated_jobs())
 
 @app.route('/job/scheduled')
 def job_scheduled():
