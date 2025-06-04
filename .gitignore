@@ -9,6 +9,7 @@ uploads
 output
 *.iml
 .DS_Store
+scheduled_jobs.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

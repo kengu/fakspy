@@ -8,16 +8,15 @@ from datetime import datetime, timedelta
 from flask import Flask, request, redirect, flash, jsonify, render_template, url_for, send_file
 from flask_session import Session
 from werkzeug.utils import secure_filename
-from apscheduler.schedulers.background import BackgroundScheduler
 
 from sartopo2faks import classify_features
+from scheduler import DEFAULT_EXPIRATION_TIME, delete_job, load_scheduled_jobs, schedule_job, init_scheduler
 
 app = Flask(__name__)
 sess = Session()
 
 UPLOAD_FOLDER = 'uploads'
 OUTPUT_FOLDER = 'output'
-DEFAULT_EXPIRATION_TIME = timedelta(hours=24)
 
 # Create directories if not exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -25,14 +24,6 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
-
-# Scheduler for handling background tasks
-scheduler = BackgroundScheduler()
-scheduler.start()
-
-# In-memory dictionary to keep track of scheduled deletions
-# This can be replaced with a database for persistence
-scheduled_jobs = {}
 
 @app.route('/')
 def home_page():
@@ -144,14 +135,7 @@ def upload(job_id):
 
     # Schedule the file for deletion
     delete_time = datetime.now() + DEFAULT_EXPIRATION_TIME
-    scheduled_jobs[job_id] = delete_time
-    scheduler.add_job(
-        func=delete,
-        trigger="date",
-        run_date=delete_time,
-        args=[job_id],  # Pass the file name to delete function
-        id=job_id  # Use file name as job ID
-    )
+    schedule_job(app, job_id, delete_time)
 
     return upload_path
 
@@ -289,53 +273,16 @@ def download(job_id):
 
 @app.route('/job/<job_id>/delete', methods=['POST'])
 def delete(job_id):
-    # Locate job folders
-    upload_path = os.path.join(
-        app.config['UPLOAD_FOLDER'], f"job_{job_id}"
-    )
-    if os.path.exists(upload_path):
-        print(f"Deleted job folder: {upload_path}")
-        shutil.rmtree(upload_path)
 
-    output_path = os.path.join(
-        app.config['OUTPUT_FOLDER'], f"job_{job_id}"
-    )
-    if os.path.exists(output_path):
-        print(f"Deleted job folder: {output_path}")
-        shutil.rmtree(output_path)
-
-    scheduled_jobs.pop(job_id)
+    delete_job(app, job_id)
 
     return redirect(url_for('home_page'))
 
 @app.route('/job/scheduled')
 def job_scheduled():
-    return jsonify(scheduled_jobs)
+    return jsonify(load_scheduled_jobs())
 
-def init_scheduler():
-    # Initialize job deletions
-    for folder in os.listdir(UPLOAD_FOLDER):
-        folder_path = os.path.join(UPLOAD_FOLDER, folder)
-        if os.path.isdir(folder_path) and folder.startswith("job_"):
-            # Extract the job_id from the folder name by removing the "job_" prefix
-            job_id = folder[4:]  # Extract everything after "job_"
-
-            # Calculate delete time
-            delete_time = datetime.now() + DEFAULT_EXPIRATION_TIME
-
-            # Initialize scheduled_jobs with job_id and folder metadata
-            scheduled_jobs[job_id] = delete_time
-
-            # Schedule job
-            scheduler.add_job(
-                func=delete,
-                trigger="date",
-                run_date=delete_time,
-                args=[job_id],  # Pass the file name to delete function
-                id=job_id  # Use file name as job ID
-            )
-
-init_scheduler()
+init_scheduler(app)
 
 if __name__ == "__main__":
 
