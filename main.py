@@ -272,7 +272,8 @@ def job(job_id):
 @app.route('/download/<job_id>')
 def download(job_id):
 
-    upload_name = get_upload_name(job_id)
+    upload_file = get_upload_file(job_id)
+    upload_name = get_file_name_without_ext(upload_file)
     # Locate the file to download
     zip_path = os.path.join(
         app.config['OUTPUT_FOLDER'], f"job_{job_id}", f"{upload_name}.zip"
