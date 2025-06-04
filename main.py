@@ -40,7 +40,10 @@ def help_page():
 
 @app.route('/privacy')
 def privacy_page():
-    return render_template('privacy.html')
+    return render_template(
+        'privacy.html',
+        delete_after=f"{int(DEFAULT_EXPIRATION_TIME.total_seconds() / 60)} minutter"
+    )
 
 @app.route('/tos')
 def tos_page():
@@ -241,7 +244,7 @@ def job(job_id):
     download_automatic = request.args.get('dl') == '1'
 
     # Calculate the hour difference
-    hours = int(DEFAULT_EXPIRATION_TIME.total_seconds() / 3600)
+    duration = int(DEFAULT_EXPIRATION_TIME.total_seconds() / 60)
 
     return render_template('job.html',
         job_id=job_id,
@@ -249,7 +252,7 @@ def job(job_id):
         download_url=download_url,
         download_file=download_file,
         download_automatic = download_automatic,
-        delete_after=f"{hours} timer",
+        delete_after=f"{duration} minutter",
         delete_url=delete_url,
     )
 

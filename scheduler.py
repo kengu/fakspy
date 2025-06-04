@@ -14,7 +14,7 @@ scheduler.start()
 # File path to store the data
 PERSISTENT_FILE = "scheduled_jobs.json"
 
-DEFAULT_EXPIRATION_TIME = timedelta(hours=24)
+DEFAULT_EXPIRATION_TIME = timedelta(minutes=10)
 
 def safe_read(file_path):
     if not os.path.exists(file_path):
