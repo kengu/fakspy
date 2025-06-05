@@ -42,6 +42,36 @@ def calculate_bounding_box(coordinates):
         "maxLng": max(lngs)
     }
 
+def derive_mission_status(features, properties):
+
+    period_id = properties.get("operationalPeriodId", "")
+
+    period = next(
+        (feature for feature in features if feature["id"] == period_id),
+        None
+    )
+
+    if period:
+        title = period.get("properties", {}).get("title", "").lower()
+        if title == "01 klargjorte oppdrag":
+            return "empty"
+        if title == "02 søkes nå":
+            return "assigned"
+        if title == "03 ferdig søkt":
+            return "searched"
+
+    status = properties.get("status", "").lower()
+    if status == "draft":
+        return "empty"
+    if status == "prepared":
+        return "empty"
+    if status == "inprogress":
+        return "assigned"
+    if status == "completed":
+        return "searched"
+
+    return "empty"
+
 def derive_point_category(properties):
     """
     Derives the 'category' field based on the given 'marker-symbol'.
@@ -93,8 +123,9 @@ def enrich_features(source_data):
     """
     enriched_features = []
     transformed_properties = {}
+    source_features = source_data["features"]
 
-    for feature in source_data["features"]:
+    for feature in source_features:
         # Extract existing geometry and properties
         geometry = feature.get("geometry")
         properties = feature.get("properties", {})
@@ -105,27 +136,26 @@ def enrich_features(source_data):
 
         feature_type = geometry.get("type", "")
         feature_class = properties.get("class", "")
+        feature_title = properties.get("title", properties.get("number", ""))
 
         # Detect geometry type and add derived information
         if feature_class == "Assignment":
             if feature_type == "Polygon":
                 transformed_properties = {
                     "aid": feature.get("id", ""),  # Map the unique id to aid
-                    "title": properties.get("title", ""),  # Use 'title' from source
+                    "title": feature_title,  # Use 'title' from source
                     "class": feature_class,
                     "category": "area",
-                    # TODO: classify mission status
-                    "missionStatus": "empty"
+                    "missionStatus": derive_mission_status(source_features, properties)
                 }
 
             if feature_type == "LineString":
                 transformed_properties = {
                     "aid": feature.get("id", ""),  # Map the unique id to aid
-                    "title": properties.get("title", ""),  # Use 'title' from source
+                    "title": feature_title,  # Use 'title' from source
                     "class": feature_class,
                     "category": "path",
-                    # TODO: classify mission status
-                    "missionStatus": "empty"
+                    "missionStatus": derive_mission_status(source_features, properties)
                 }
 
         else:
@@ -147,7 +177,7 @@ def enrich_features(source_data):
             if feature_type == "Polygon":
                 transformed_properties = {
                     "aid": feature.get("id", ""),  # Map the unique id to aid
-                    "title": properties.get("title", ""),  # Use 'title' from source
+                    "title": feature_title,  # Use 'title' from source
                     "class": feature_class,
                     "category": "area",
                     "missionStatus": "empty"
@@ -156,7 +186,7 @@ def enrich_features(source_data):
             if feature_type == "LineString":
                 transformed_properties = {
                     "aid": feature.get("id", ""),  # Map the unique id to aid
-                    "title": properties.get("title", ""),  # Use 'title' from source
+                    "title": feature_title,  # Use 'title' from source
                     "class": feature_class,
                     "category": "path",
                     "missionStatus": "empty"
