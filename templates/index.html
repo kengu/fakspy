@@ -15,12 +15,14 @@
                     <label for="geojson_file" class="form-label">Last opp SARTopo GeoJSON fil:</label>
                     <input type="file" name="geojson_file" id="geojson_file" class="form-control" required>
                 </div>
-                <!-- Submit Buttons -->
-                <div class="d-flex justify-content-end">
-                    <!-- Button for 'Select' -->
-                    <button type="submit" name="action" value="select" class="btn btn-primary mx-2">Utvalg</button>
-                    <!-- Button for 'Convert' -->
-                    <button type="submit" name="action" value="convert" class="btn btn-success">Konverter</button>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Ved bruk godtar du <a href="tos">brukervilkårene</a>:</span>
+                    <div class="d-flex justify-content-end">
+                        <!-- Button for 'Select' -->
+                        <button type="submit" name="action" value="select" class="btn btn-primary mx-2">Utvalg</button>
+                        <!-- Button for 'Convert' -->
+                        <button type="submit" name="action" value="convert" class="btn btn-success">Konverter</button>
+                    </div>
                 </div>
             </form>
         </div>
