@@ -1,3 +1,4 @@
+import glob
 import json
 import os
 import uuid
@@ -163,8 +164,13 @@ def convert(job_id, upload_path, selected_ids):
 
         # Output feature files to unique job folder
         sink_path = os.path.join(app.config['OUTPUT_FOLDER'], unique_folder)
-        classify_features(source_data, sink_path)
 
+        # Remove old files
+        files = glob.glob(f"{sink_path}/*")
+        for f in files:
+            os.remove(f)
+
+        classify_features(source_data, sink_path)
         processed_files = [os.path.join(sink_path, file) for file in os.listdir(sink_path)
                            if os.path.isfile(os.path.join(sink_path, file))]
 
@@ -179,11 +185,7 @@ def convert(job_id, upload_path, selected_ids):
                 zipf.write(file, os.path.basename(file))
 
         # Return redirect URL for client to initiate automatic download
-        job_url = url_for(
-            'job',
-            job_id=job_id
-        )
-
+        job_url = url_for('job',job_id=job_id)
         return redirect(f"{job_url}?dl=1")
 
     except Exception as e:
