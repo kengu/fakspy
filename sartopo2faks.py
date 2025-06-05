@@ -139,6 +139,9 @@ def enrich_features(source_data):
                     "class": feature_class,
                     "level": "Punkt",  # Assign static value
                     "category": derive_point_category(properties),
+                    "message": properties.get(
+                        "description", properties.get("message", "")
+                    )
                 }
 
             if feature_type == "Polygon":
