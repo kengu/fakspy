@@ -3,6 +3,43 @@
 
 {% block content %}
 <script>
+    // Save state to localStorage
+    function saveState() {
+        const featureItems = document.querySelectorAll('ul li');
+        const state = Array.from(featureItems).map(item => {
+            const checkbox = item.querySelector('input[type=checkbox]');
+            return {
+                id: checkbox.id,
+                checked: checkbox.checked,
+                visible: !item.classList.contains('d-none'),
+            };
+        });
+        localStorage.setItem('{{ upload_file }}', JSON.stringify(state));
+    }
+
+    // Restore state from localStorage
+    function restoreState() {
+        const savedState = localStorage.getItem('{{ upload_file }}');
+        if (!savedState) return;
+
+        const savedItems = JSON.parse(savedState);
+        savedItems.forEach(savedItem => {
+            const item = document.querySelector(`input[id="${savedItem.id}"]`).closest('li');
+
+            // Restore checkbox state
+            const checkbox = item.querySelector('input[type=checkbox]');
+            checkbox.checked = savedItem.checked;
+
+            // Restore visibility
+            if (savedItem.visible) {
+                item.classList.remove('d-none');
+            } else {
+                item.classList.add('d-none');
+            }
+
+        });
+    }
+
     function toggleSelection(action) {
         const searchInput = document.getElementById('search-box');
         const featureItems = document.querySelectorAll('ul li');
@@ -11,19 +48,20 @@
             // Deselect all and reset filter
             searchInput.value = ''; // Clear the search input
             featureItems.forEach(item => {
-                item.style.display = ''; // Reset all items to visible
+                item.classList.remove('d-none'); // Make the item visible
                 const checkbox = item.querySelector('input[type=checkbox]');
                 checkbox.checked = false; // Deselect the checkbox
             });
         } else if (action === 'all') {
             // Select all visible checkboxes
             featureItems.forEach(item => {
-                if (item.style.display !== 'none') { // Only select visible items
-                    const checkbox = item.querySelector('input[type=checkbox]');
-                    checkbox.checked = true; // Select the checkbox
-                }
+                item.classList.remove('d-none'); // Make the item visible
+                const checkbox = item.querySelector('input[type=checkbox]');
+                checkbox.checked = true; // Select the checkbox
             });
         }
+
+        saveState();
     }
 
     function filterFeatures() {
@@ -46,7 +84,14 @@
                 checkbox.checked = false; // Automatically deselect the checkbox
             }
         });
+
+        saveState();
+
     }
+
+    // Restore state on page load
+    window.addEventListener('DOMContentLoaded', restoreState);
+
 </script>
 
 <div class="container my-5">
@@ -59,12 +104,12 @@
             <form action="/export" method="POST">
                 <input type="hidden" name="job_id" value="{{ job_id }}">
                 <input type="hidden" name="upload_file" value="{{ upload_file }}">
-                <div class="d-flex justify-content-between align-items-center mt-3 my-2">
+                <div class="d-flex justify-content-between mt-3 my-2">
                     <div>
-                        <button type="reset" onclick="toggleSelection('all')" class="btn btn-secondary">Alle</button>
+                        <button type="button" onclick="toggleSelection('all')" class="btn btn-secondary">Alle</button>
                         <button type="button" onclick="toggleSelection('none')" class="btn btn-secondary">Ingen</button>
                         <button type="button" onclick="window.history.back()" class="btn btn-info justify-content-between">Tilbake</button>
-                        <input type="text" class="disabled" value="{{ upload_file }}" disabled>
+                        <input type="text" class="disabled my-2" value="{{ upload_file }}" disabled>
                     </div>
                     <div>
                         <button type="submit" class="btn btn-primary">Eksport</button>

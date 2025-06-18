@@ -2,10 +2,9 @@ import glob
 import json
 import os
 import uuid
-import shutil
 import zipfile
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask import Flask, request, redirect, flash, jsonify, render_template, url_for, send_file
 from flask_session import Session
 from werkzeug.utils import secure_filename
