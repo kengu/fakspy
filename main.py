@@ -147,6 +147,10 @@ def upload(job_id):
 
 def convert(job_id, upload_path, selected_ids):
     try:
+
+        if not os.path.exists(upload_path):
+            return redirect(url_for('home_page'))
+
         # Load original GeoJSON data
         with open(upload_path, 'r') as file:
             geojson_data = json.load(file)
@@ -167,8 +171,7 @@ def convert(job_id, upload_path, selected_ids):
 
         # Remove old files
         files = glob.glob(f"{sink_path}/*")
-        for f in files:
-            os.remove(f)
+        for f in files: os.remove(f)
 
         classify_features(source_data, sink_path)
         processed_files = [os.path.join(sink_path, file) for file in os.listdir(sink_path)
