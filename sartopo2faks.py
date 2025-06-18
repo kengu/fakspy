@@ -2,20 +2,6 @@ import json
 import os
 import sys
 import geojson
-import shapely
-from shapely.geometry import shape
-
-# Sink files to prepare output
-sink_files = {
-    "Etterretningsreflekser.geojson": {"type": "FeatureCollection", "features": []},
-    "Linjer.geojson": {"type": "FeatureCollection", "features": []},
-    "Mobilspor.geojson": {"type": "FeatureCollection", "features": []},
-    "Punkter.geojson": {"type": "FeatureCollection", "features": []},
-    "Regioner.geojson": {"type": "FeatureCollection", "features": []},
-    "Soeksarealer.geojson": {"type": "FeatureCollection", "features": []},
-    "Sperret.geojson": {"type": "FeatureCollection", "features": []},
-    "Statistiske_reflekser.geojson": {"type": "FeatureCollection", "features": []},
-}
 
 # Mapping folders to sink files (Folder titles help categorize features)
 folder_to_sink = {
@@ -203,6 +189,18 @@ def enrich_features(source_data):
     # Return the enriched data structure
     return {"type": "FeatureCollection", "features": enriched_features}
 
+def create_sink_files():
+    # Sink files to prepare output
+    return {
+        "Etterretningsreflekser.geojson": {"type": "FeatureCollection", "features": []},
+        "Linjer.geojson": {"type": "FeatureCollection", "features": []},
+        "Mobilspor.geojson": {"type": "FeatureCollection", "features": []},
+        "Punkter.geojson": {"type": "FeatureCollection", "features": []},
+        "Regioner.geojson": {"type": "FeatureCollection", "features": []},
+        "Soeksarealer.geojson": {"type": "FeatureCollection", "features": []},
+        "Sperret.geojson": {"type": "FeatureCollection", "features": []},
+        "Statistiske_reflekser.geojson": {"type": "FeatureCollection", "features": []},
+    }
 
 def classify_features(source_data, output_folder):
     """
@@ -211,6 +209,8 @@ def classify_features(source_data, output_folder):
     """
     # Enrich source features before classifying them
     enriched_data = enrich_features(source_data)
+
+    sink_files = create_sink_files()
 
     for feature in enriched_data["features"]:
         feature_type = feature["geometry"].get("type", "")
