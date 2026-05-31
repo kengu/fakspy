@@ -86,6 +86,17 @@ python3 main.py
 ```
 og åpne siden http://127.0.0.1:5000 i en nettleser
 
+## Deploy
+Produksjonsmiljøet kjører på en Digital Ocean droplet med Flask bak `gunicorn`, administrert som en systemd-tjeneste.
+
+Deploy gjøres manuelt via SSH:
+1. Logg inn på dropleten og gå til `/home/flask/flask_project/`.
+2. Kjør:
+   ```bash
+   git pull && sudo systemctl restart gunicorn.service
+   ```
+3. Git-passord for `pull` ligger i Keeper under oppføringen "Fakspy".
+
 ## Notater
 - Hvis flere avhengigheter legges til, oppdater `requirements.txt`-filen med:
   ```bash
